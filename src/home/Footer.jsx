@@ -22,9 +22,9 @@ const Footer = () => {
           <div className="md:w-1/3">
             <h3 className="text-lg font-semibold mb-3 text-center md:text-left">Quick Links</h3>
             <ul className="flex flex-wrap justify-center md:justify-start gap-x-6 gap-y-2 text-sm md:text-base font-medium">
-              <li><a href="#" className="hover:text-yellow-400 transition">Home</a></li>
-              <li><a href="#" className="hover:text-yellow-400 transition">Library</a></li>
-              <li><a href="#" className="hover:text-yellow-400 transition">Contact</a></li>
+              <li><a href="/" className="hover:text-yellow-400 transition">Home</a></li>
+              <li><a href="/library" className="hover:text-yellow-400 transition">Library</a></li>
+              <li><a href="/contact" className="hover:text-yellow-400 transition">Contact</a></li>
             </ul>
           </div>
 
