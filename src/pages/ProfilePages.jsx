@@ -36,29 +36,16 @@ const ProfilePages = () => {
         if (isInitialized.current) return;
         isInitialized.current = true;
 
-        console.log("Initializing profile page, checking auth status...");
-
         // Cek status autentikasi dan ambil session
         const userData = await checkAuthAndGetSession();
 
         if (!userData) {
-          console.log("No authenticated user found, redirecting to login");
           navigate("/login");
           return;
         }
 
-        console.log("User authenticated, profile data:", {
-          full_name,
-          email,
-          username,
-          avatar_url,
-        });
-
         // Jika tidak ada data profil lengkap padahal user sudah terautentikasi
         if (userData && (!full_name || !username)) {
-          console.log(
-            "User authenticated but profile incomplete, fetching profile data..."
-          );
           await fetchUser();
         }
       } catch (error) {
@@ -122,7 +109,6 @@ const ProfilePages = () => {
 
   // Arahkan ke login jika tidak ada user terautentikasi
   if (!user) {
-    console.log("No user in profile page, should redirect to login");
     // Redirect dilakukan di useEffect untuk menghindari error selama render
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-colorback dark:bg-gray-900">
