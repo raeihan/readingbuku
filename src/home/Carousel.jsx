@@ -21,15 +21,19 @@ const Carousel = () => {
         modules={[Pagination, Navigation, Autoplay]}
         className="w-full h-48 sm:h-56 md:h-72 lg:h-96 rounded-lg"
       >
-        <SwiperSlide className="flex justify-center items-center bg-white">
-          <div className="w-full h-full flex items-center justify-center p-2 sm:p-4">
-            <img src="./international.png" className="object-contain max-h-full max-w-full" alt="International books" />
-          </div>
+        <SwiperSlide className="relative overflow-hidden bg-gray-100">
+          <img 
+            src="./international.png" 
+            className="w-full h-full object-cover" 
+            alt="International books" 
+          />
         </SwiperSlide>
-        <SwiperSlide className="flex justify-center items-center bg-white">
-          <div className="w-full h-full flex items-center justify-center p-2 sm:p-4">
-            <img src="./internationalbook.png" className="object-contain max-h-full max-w-full" alt="Test book" />
-          </div>
+        <SwiperSlide className="relative overflow-hidden bg-gray-100">
+          <img 
+            src="./internationalbook.png" 
+            className="w-full h-full object-cover" 
+            alt="Test book" 
+          />
         </SwiperSlide>
       </Swiper>
     </div>
