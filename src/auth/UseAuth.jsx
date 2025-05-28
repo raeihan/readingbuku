@@ -32,7 +32,6 @@ export const useAuth = create((set, get) => ({
         throw error;
       }
 
-      console.log("Google Auth initiated:", data);
       return data;
     } catch (error) {
       console.error("Login with Google failed:", error.message);
@@ -68,7 +67,6 @@ export const useAuth = create((set, get) => ({
             email,
             loading: false,
           });
-          console.log("User Registered:", data.user);
         }
       } catch (error) {
         console.error("User Can't be Added:", error.message);
@@ -84,7 +82,6 @@ export const useAuth = create((set, get) => ({
     if (error) {
       console.error("Login Failed: ", error.message);
     } else {
-      console.log("Login Success:", data.user);
       set({ user: data.user, auth: true });
       await get().fetchUserData(data.user.id);
     }
@@ -106,7 +103,6 @@ export const useAuth = create((set, get) => ({
     });
     // Pastikan localStorage juga dibersihkan
     localStorage.removeItem("sb-ggigrakpmocwmzfyrzdi-auth-token");
-    console.log("User Logged Out");
   },
 
   // Fungsi ini untuk mengecek status autentikasi dan mengambil data pengguna saat aplikasi dimuat
@@ -128,14 +124,12 @@ export const useAuth = create((set, get) => ({
 
       // Jika tidak ada sesi yang aktif
       if (!session) {
-        console.log("No active session found");
         set({ loading: false });
         return null;
       }
 
       // Jika ada sesi, ambil data user dari session
       const { user } = session;
-      console.log("Active session found, user:", user);
 
       set({
         user,
@@ -163,8 +157,6 @@ export const useAuth = create((set, get) => ({
     if (!user) return;
 
     try {
-      console.log("Checking if profile exists for user:", user.id);
-
       // Cek apakah profil sudah ada dengan error handling yang lebih baik
       const { data: existingProfile, error: profileError } = await supabase
         .from("profiles")
@@ -182,8 +174,6 @@ export const useAuth = create((set, get) => ({
 
       // Jika profil belum ada, buat profil baru
       if (!existingProfile) {
-        console.log("Profile doesn't exist, creating new profile");
-
         // Extract metadata dengan lebih teliti
         const fullName =
           user.user_metadata?.full_name || user.user_metadata?.name || "";
@@ -205,9 +195,6 @@ export const useAuth = create((set, get) => ({
           username: username,
           avatar_url: avatarUrl,
         };
-
-        console.log("Creating profile with data:", profileData);
-
         // Metode 1: Gunakan RPC function yang lebih aman
         try {
           const { data: rpcResult, error: rpcError } = await supabase.rpc(
@@ -225,8 +212,6 @@ export const useAuth = create((set, get) => ({
             console.warn("RPC create profile failed:", rpcError.message);
             throw rpcError;
           }
-
-          console.log("Profile created via RPC successfully");
           set({
             full_name: profileData.full_name,
             username: profileData.username,
@@ -235,8 +220,6 @@ export const useAuth = create((set, get) => ({
           });
           return;
         } catch (rpcError) {
-          console.log("RPC failed, trying direct insert...");
-
           // Metode 2: Insert langsung dengan upsert
           try {
             const { data: insertedProfile, error: insertError } = await supabase
@@ -280,8 +263,6 @@ export const useAuth = create((set, get) => ({
                 });
                 return;
               }
-
-              console.log("Minimal profile created");
               set({
                 full_name: "",
                 username: user.email.split("@")[0] || "",
@@ -290,8 +271,6 @@ export const useAuth = create((set, get) => ({
               });
               return;
             }
-
-            console.log("Profile created via direct insert:", insertedProfile);
             set({
               full_name: insertedProfile.full_name || "",
               username: insertedProfile.username || profileData.username,
@@ -310,7 +289,6 @@ export const useAuth = create((set, get) => ({
           }
         }
       } else {
-        console.log("Profile already exists:", existingProfile);
         set({
           full_name: existingProfile.full_name || "",
           username: existingProfile.username || user.email.split("@")[0] || "",
@@ -327,8 +305,6 @@ export const useAuth = create((set, get) => ({
   fetchUser: async () => {
     try {
       if (!get().user) {
-        console.log("No user in state, fetching session...");
-
         set({ loading: true });
 
         // Cek session dari Supabase
@@ -344,7 +320,6 @@ export const useAuth = create((set, get) => ({
         }
 
         if (!session) {
-          console.log("No active session");
           set({ loading: false });
           return;
         }
@@ -353,7 +328,6 @@ export const useAuth = create((set, get) => ({
         const { user } = session;
 
         if (user) {
-          console.log("User Found from session:", user);
           set({
             user,
             auth: true,
@@ -367,10 +341,8 @@ export const useAuth = create((set, get) => ({
           // FIX: Ensure profile exists (buat profil jika belum ada)
           await get().createProfileIfNotExists(user);
         } else {
-          console.log("No user found in session");
         }
       } else {
-        console.log("User already in state, updating profile data");
         await get().fetchUserData(get().user.id);
 
         // FIX: Ensure profile exists even if user is already in state
@@ -385,7 +357,6 @@ export const useAuth = create((set, get) => ({
 
   fetchUserData: async (userId) => {
     try {
-      console.log("Fetching user data for ID:", userId);
       const { data: userData, error } = await supabase
         .from("profiles")
         .select("full_name, email, username, avatar_url")
@@ -395,7 +366,6 @@ export const useAuth = create((set, get) => ({
       if (error) {
         console.error("Fetch user data error: ", error.message);
         if (error.code === "PGRST116") {
-          console.log("Profile not found for user, might need to create one");
           // FIX: Ensure profile is created if user data isn't found
           if (get().user) {
             await get().createProfileIfNotExists(get().user);
@@ -405,7 +375,6 @@ export const useAuth = create((set, get) => ({
       }
 
       if (userData) {
-        console.log("User Data Fetched:", userData);
         set({
           id: userId,
           full_name: userData.full_name || "",
@@ -414,7 +383,6 @@ export const useAuth = create((set, get) => ({
           avatar_url: userData.avatar_url || "",
         });
       } else {
-        console.log("No user data found in profiles table");
         // FIX: Ensure profile is created if user data isn't found
         if (get().user) {
           await get().createProfileIfNotExists(get().user);
@@ -427,14 +395,6 @@ export const useAuth = create((set, get) => ({
 
   updateProfile: async (userId, full_name, email, username, avatar_url) => {
     try {
-      console.log("Attempting to update profile with data:", {
-        userId,
-        full_name,
-        email,
-        username,
-        avatar_url,
-      });
-
       if (!userId) {
         console.error("User ID is required for update");
         return false;
@@ -495,8 +455,6 @@ export const useAuth = create((set, get) => ({
         });
         return false;
       }
-
-      console.log("Profile upserted successfully:", upsertedProfile);
       set({ full_name, email, username, avatar_url });
       return true;
     } catch (error) {
